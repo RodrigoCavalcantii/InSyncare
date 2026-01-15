@@ -4,24 +4,43 @@ import { useAuth } from "../../hooks/useAuth";
 export function WelcomeHeader() {
   const { user } = useAuth();
 
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
+
   return (
     <div className="flex items-center gap-3">
       <div className="relative group cursor-pointer">
         <div
-          className="bg-center bg-no-repeat bg-cover rounded-full size-12 border-2 border-white dark:border-background-dark shadow-md"
-          style={{
-            backgroundImage:
-              'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAblzBNmRJqDrCe_S_7vyJiBk9aMSjNYf3sTzKaUF8vH1cqKekxwYR9l-PitCt67pIk9kvnhOqhEeuLHkP8i3oeNauTW08QSzyy4UGPpk-CE0xALmDmbO7odkMEoPLmuoaW8a1oWxhT8-xKEfhVUhHhvyLlm_woQyH6nZtrWC-1me2MeCOsqg5i3uPKc1RwXRZiyzJZksMfAsv5XQiYvXzQsMTlHrEvS8f3xwGGkdaOoCOqGdttB2bXWtmu3qNWO8jwdCZxtdM8Mw")',
-          }}
-        ></div>
-        <div className="absolute bottom-0 right-0 size-3 bg-secondary rounded-full border-2 border-white dark:border-background-dark"></div>
+          className="flex items-center justify-center bg-secondary/20 rounded-full size-12 border-2 border-white dark:border-background-dark shadow-md overflow-hidden"
+        >
+          {user?.avatar_url ? (
+            <img 
+              src={user.avatar_url} 
+              alt={user.name} 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-secondary font-bold text-sm">
+              {user?.name ? getInitials(user.name) : "?"}
+            </span>
+          )}
+        </div>
+        
+        <div className="absolute bottom-0 right-0 size-3 bg-secondary rounded-full border-2 border-white dark:border-background-dark shadow-sm"></div>
       </div>
+
       <div className="flex flex-col">
-        <span className="text-xs font-bold text-accent uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-accent uppercase tracking-[0.15em] mb-0.5">
           Bem-vindo
         </span>
         <h2 className="text-text-main dark:text-white text-xl font-bold leading-tight">
-          {user?.name || "Visitante"}
+          {user?.name || "Carregando..."}
         </h2>
       </div>
     </div>
