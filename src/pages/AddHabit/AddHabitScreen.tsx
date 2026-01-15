@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { HABIT_TYPES, HabitKey } from "./habitConstants";
 import { HabitSelectionGrid } from "./HabitSelectionGrid";
 import { HabitConfirmationForm } from "./HabitConfirmationForm";
+import { useAuth } from "../../hooks/useAuth";
+import { supabase } from "../../services/supabase";
 
 interface AddHabitScreenProps {
   isOpen: boolean;
@@ -9,6 +11,8 @@ interface AddHabitScreenProps {
 }
 
 export function AddHabitScreen({ isOpen, onClose }: AddHabitScreenProps) {
+  const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedHabitKey, setSelectedHabitKey] = useState<HabitKey | null>(
     null
@@ -35,15 +39,41 @@ export function AddHabitScreen({ isOpen, onClose }: AddHabitScreenProps) {
     setShowConfirmModal(true);
   };
 
-  const handleSaveHabit = (description: string) => {
-    if (!selectedHabitKey) return;
-
-    console.log("Salvando hábito:", {
-      type: selectedHabitKey,
-      description: description,
-    });
-
-    onClose();
+  const handleSaveHabit = async (description: string) => {
+    if (!selectedHabitKey || !user) return;
+  
+    setIsSaving(true);
+  
+    const categoryIds: Record<string, number> = {
+      water: 1,
+      food: 2,
+      activity: 3,
+      sleep: 4
+    };
+  
+    try {
+      const { error } = await supabase
+        .from("habits")
+        .insert([
+          {
+            user_id: user.id,
+            category_id: categoryIds[selectedHabitKey],
+            description: description,
+            date_reference: new Date().toISOString().split('T')[0]
+          }
+        ]);
+  
+      if (error) throw error;
+  
+      console.log("Hábito salvo com sucesso!");
+      onClose();
+      
+      window.location.reload(); 
+    } catch (error: any) {
+      alert("Erro ao salvar hábito: " + error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const currentHabitConfig = selectedHabitKey

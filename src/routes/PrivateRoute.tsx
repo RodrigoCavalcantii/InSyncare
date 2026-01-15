@@ -5,7 +5,15 @@ import { useAuth } from "../hooks/useAuth";
 export function PrivateRoute() {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) return <div>Carregando sistema...</div>;
+  console.log("LOG ROTA: ", { isAuthenticated, loading });
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background-light">
+        <p>Sincronizando...</p>
+      </div>
+    );
+  }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }

@@ -24,46 +24,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await fetchUserProfile(session.user);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (session) {
+          await fetchUserProfile(session.user);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        setLoading(false);
       }
-      setLoading(false);
     };
-
+  
     initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        await fetchUserProfile(session.user);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
-
-  async function fetchUserProfile(supabaseUser: SupabaseUser) {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("display_name,avatar_url")
-      .eq("id", supabaseUser.id)
-      .single();
   
-    if (error) {
-      console.warn("Perfil não encontrado, usando dados básicos.");
+  async function fetchUserProfile(supabaseUser: any) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("id", supabaseUser.id)
+        .single();
+  
+        if (error) {
+          console.warn("Perfil não encontrado, usando dados básicos.");
+        }
+  
+      setUser({
+        id: supabaseUser.id,
+        email: supabaseUser.email || "",
+        name: data?.display_name || "Usuário",
+        avatar_url: data?.avatar_url || "",
+      });
+    } catch (err) {
+      console.log("LOG 8: Erro no catch do fetchUserProfile:", err);
+    } finally {
+      setLoading(false);
     }
-  
-    setUser({
-      id: supabaseUser.id,
-      email: supabaseUser.email || "",
-      name: data?.display_name || "Usuário",
-      avatar_url: data?.avatar_url || "",
-    });
-    
-    setLoading(false);
   }
 
   async function logout() {
@@ -83,5 +81,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-export { AuthContext };
+export { AuthContext }; 
+export default AuthProvider;

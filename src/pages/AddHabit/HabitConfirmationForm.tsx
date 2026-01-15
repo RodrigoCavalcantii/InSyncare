@@ -5,12 +5,14 @@ interface HabitConfirmationFormProps {
   habitConfig: HabitConfig;
   onClose: () => void;
   onSave: (description: string) => void;
+  isSaving?: boolean;
 }
 
 export function HabitConfirmationForm({
   habitConfig,
   onClose,
   onSave,
+  isSaving,
 }: HabitConfirmationFormProps) {
   const [description, setDescription] = useState("");
 
@@ -73,13 +75,13 @@ export function HabitConfirmationForm({
 
         <button
           onClick={() => onSave(description)}
-          disabled={!description.trim()}
+          disabled={!description.trim() || isSaving}
           className={`
             w-full h-14 text-white text-base font-bold rounded-2xl transition-all flex items-center justify-center shadow-lg active:scale-[0.98]
             bg-primary hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
-          Registrar Hábito
+          {isSaving ? "Salvando..." : "Registrar Hábito"}
         </button>
 
         <div className="h-2"></div>
