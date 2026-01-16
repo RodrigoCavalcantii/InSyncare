@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../services/supabase"; // Importe o cliente
-
+import { supabase } from "../../services/supabase";
+import { useAuth } from "../../hooks/useAuth";
 import AuthLayout from "../../components/layout/AuthLayout";
 import { Logo } from "../../components/ui/Logo";
 import { TextInput } from "../../components/ui/TextInput";
@@ -9,10 +9,17 @@ import { PrimaryButton } from "../../components/ui/PrimaryButton";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState(""); // Mudamos de user para email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { isAuthenticated } = useAuth();
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/today", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,14 +33,12 @@ export default function Login() {
       });
 
       if (authError) {
-        console.log("Erro completo:", authError);
+        setLoading(false);
         alert("Erro no login: " + authError.message);
         throw authError;
       }
 
-      if (data.user) {
-        navigate("/today");
-      }
+
     } catch (err: any) {
       setError("E-mail ou senha inválidos");
       console.error(err.message);

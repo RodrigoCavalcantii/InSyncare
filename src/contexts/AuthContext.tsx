@@ -22,47 +22,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (session) {
-          await fetchUserProfile(session.user);
-        } else {
-          setLoading(false);
-        }
-      } catch (err) {
-        setLoading(false);
-      }
-    };
-  
-    initializeAuth();
-  }, []);
-  
-  async function fetchUserProfile(supabaseUser: any) {
+  async function fetchUserProfile(supabaseUser: SupabaseUser) {
     try {
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name, avatar_url")
         .eq("id", supabaseUser.id)
         .single();
-  
-        if (error) {
-          console.warn("Perfil não encontrado, usando dados básicos.");
-        }
-  
-      setUser({
+
+      const profile = {
         id: supabaseUser.id,
         email: supabaseUser.email || "",
         name: data?.display_name || "Usuário",
         avatar_url: data?.avatar_url || "",
-      });
+      };
+
+      setUser(profile);
+      return profile;
     } catch (err) {
-      console.log("LOG 8: Erro no catch do fetchUserProfile:", err);
+      console.error("Erro ao buscar perfil:", err);
+      return null;
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    const initialize = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await fetchUserProfile(session.user);
+      } else {
+        setLoading(false);
+      }
+    };
+    initialize();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`Evento de Auth: ${event}`);
+
+      if (event === "SIGNED_IN" && session) {
+        await fetchUserProfile(session.user);
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   async function logout() {
     await supabase.auth.signOut();
@@ -77,9 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
-export { AuthContext }; 
+export { AuthContext };
 export default AuthProvider;
