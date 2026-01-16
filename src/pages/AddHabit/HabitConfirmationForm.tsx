@@ -18,33 +18,32 @@ export function HabitConfirmationForm({
 
   const getPlaceholder = (id: string) => {
     switch (id) {
-      case "water":
-        return "Ex: 500ml";
-      case "activity":
-        return "Ex: 30min corrida";
-      case "food":
-        return "Ex: Almoço";
-      case "sleep":
-        return "Ex: Dormi às 23h";
-      default:
-        return "Digite aqui...";
+      case "water": return "Ex: 500ml";
+      case "activity": return "Ex: 30min corrida";
+      case "food": return "Ex: Almoço";
+      case "sleep": return "Ex: Dormi às 23h";
+      default: return "Digite aqui...";
     }
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex flex-col justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-[2px]">
-      <div className="flex-1" onClick={onClose}></div>
+    /* 1. Mudamos justify-end para justify-center para o modal não ficar preso no rodapé ao abrir o teclado */
+    <div className="fixed inset-0 z-[60] flex flex-col justify-center items-center bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm p-4">
+      
+      {/* Background clicável para fechar */}
+      <div className="absolute inset-0 -z-10" onClick={onClose}></div>
 
-      <div className="w-full bg-surface-light dark:bg-surface-dark rounded-t-[32px] p-8 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] border-t border-white/40 dark:border-white/5 animate-slideUp">
-        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full mx-auto mb-6 opacity-60"></div>
+      {/* 2. Removemos rounded-t-[32px] e usamos rounded-[32px] (arredondado em tudo) para parecer um card flutuante centralizado */}
+      <div className="w-full max-w-sm bg-surface-light dark:bg-surface-dark rounded-[32px] p-8 shadow-2xl border border-white/20 animate-in fade-in zoom-in duration-300">
+        
+        {/* Handle visual opcional (pode remover se estiver centralizado) */}
+        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full mx-auto mb-6 opacity-40"></div>
 
         <div className="text-center mb-8">
-          <div
-            className={`
+          <div className={`
             w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg
             ${habitConfig.styles.iconBg} ${habitConfig.styles.icon}
-          `}
-          >
+          `}>
             <span className="material-symbols-outlined text-[40px]">
               {habitConfig.icon}
             </span>
@@ -67,24 +66,30 @@ export function HabitConfirmationForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={getPlaceholder(habitConfig.id)}
-              className="block w-full px-4 py-4 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-2xl text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 outline-none transition-all"
+              /* 3. Aumentamos o contraste e foco para garantir visibilidade */
+              className="block w-full px-4 py-4 bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-gray-700 rounded-2xl text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
               autoFocus
             />
           </div>
         </div>
 
-        <button
-          onClick={() => onSave(description)}
-          disabled={!description.trim() || isSaving}
-          className={`
-            w-full h-14 text-white text-base font-bold rounded-2xl transition-all flex items-center justify-center shadow-lg active:scale-[0.98]
-            bg-primary hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed
-          `}
-        >
-          {isSaving ? "Salvando..." : "Registrar Hábito"}
-        </button>
-
-        <div className="h-2"></div>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => onSave(description)}
+            disabled={!description.trim() || isSaving}
+            className="w-full h-14 text-white text-base font-bold rounded-2xl transition-all flex items-center justify-center shadow-lg active:scale-[0.98] bg-primary hover:brightness-110 disabled:opacity-50"
+          >
+            {isSaving ? "Salvando..." : "Registrar Hábito"}
+          </button>
+          
+          {/* Botão cancelar explícito ajuda no mobile quando o teclado está aberto */}
+          <button 
+            onClick={onClose}
+            className="w-full py-2 text-sm font-medium text-secondary-grey hover:text-primary transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
   );
