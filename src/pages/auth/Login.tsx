@@ -27,6 +27,7 @@ export default function Login() {
 
       if (authError) {
         console.log("Erro completo:", authError);
+        alert("Erro no login: " + authError.message);
         throw authError;
       }
 
