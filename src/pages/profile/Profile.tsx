@@ -11,6 +11,15 @@ export function Profile() {
     navigate("/login");
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
+
   return (
     <div className="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden pb-10 bg-background-light dark:bg-background-dark font-display antialiased">
       <header className="flex items-center bg-background-light dark:bg-background-dark p-6 pb-2 sticky top-0 z-10">
@@ -38,7 +47,7 @@ export function Profile() {
             >
               {!user?.avatar_url && (
                 <span className="text-3xl font-bold text-primary/40 uppercase">
-                  {user?.name?.charAt(0) || "U"}
+                  {user?.name ? getInitials(user.name) : "?"}
                 </span>
               )}
             </div>
@@ -79,6 +88,9 @@ export function Profile() {
         </button>
         <p className="text-center text-secondary-grey/40 text-[10px] mt-6 font-medium tracking-wide uppercase">
           InSyncare v2.4.0 • Built for Wellness
+        </p>
+        <p className="text-center text-secondary-grey/40 text-[8px] mt-6 font-medium tracking-wide uppercase">
+          @rodrigo_cavalcantii
         </p>
       </div>
       
