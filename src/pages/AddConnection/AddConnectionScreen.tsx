@@ -24,7 +24,7 @@ export function AddConnectionScreen({ isOpen, onClose }: AddConnectionScreenProp
     if (isOpen) {
       setIsVisible(true);
     } else {
-      const timer = setTimeout(() => setIsVisible(false), 300); // Tempo da animação
+      const timer = setTimeout(() => setIsVisible(false), 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);

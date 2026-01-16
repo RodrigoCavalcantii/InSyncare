@@ -27,16 +27,12 @@ export function HabitConfirmationForm({
   };
 
   return (
-    /* 1. Mudamos justify-end para justify-center para o modal não ficar preso no rodapé ao abrir o teclado */
     <div className="fixed inset-0 z-[60] flex flex-col justify-center items-center bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm p-4">
       
-      {/* Background clicável para fechar */}
       <div className="absolute inset-0 -z-10" onClick={onClose}></div>
 
-      {/* 2. Removemos rounded-t-[32px] e usamos rounded-[32px] (arredondado em tudo) para parecer um card flutuante centralizado */}
       <div className="w-full max-w-sm bg-surface-light dark:bg-surface-dark rounded-[32px] p-8 shadow-2xl border border-white/20 animate-in fade-in zoom-in duration-300">
         
-        {/* Handle visual opcional (pode remover se estiver centralizado) */}
         <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full mx-auto mb-6 opacity-40"></div>
 
         <div className="text-center mb-8">
@@ -66,7 +62,6 @@ export function HabitConfirmationForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={getPlaceholder(habitConfig.id)}
-              /* 3. Aumentamos o contraste e foco para garantir visibilidade */
               className="block w-full px-4 py-4 bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-gray-700 rounded-2xl text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
               autoFocus
             />
@@ -82,7 +77,6 @@ export function HabitConfirmationForm({
             {isSaving ? "Salvando..." : "Registrar Hábito"}
           </button>
           
-          {/* Botão cancelar explícito ajuda no mobile quando o teclado está aberto */}
           <button 
             onClick={onClose}
             className="w-full py-2 text-sm font-medium text-secondary-grey hover:text-primary transition-colors"
