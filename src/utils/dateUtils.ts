@@ -18,12 +18,11 @@ export const formatDateHeader = (date: Date) => {
 export const getWeekDays = () => {
   const today = new Date();
   const days = [];
-  const currentDay = today.getDay();
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - currentDay); 
-  for (let i = 0; i < 7; i++) {
-    const tempDate = new Date(startOfWeek);
-    tempDate.setDate(startOfWeek.getDate() + i);
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - 2);
+  for (let i = 0; i < 5; i++) {
+    const tempDate = new Date(startDate);
+    tempDate.setDate(startDate.getDate() + i);
     days.push(tempDate);
   }
   return days;

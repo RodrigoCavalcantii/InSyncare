@@ -8,6 +8,15 @@ body {
   min-height: max(884px, 100dvh);
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 .logo-gradient-text {
   background: linear-gradient(135deg, #1F6F78 0%, #E9836F 100%);
   -webkit-background-clip: text;

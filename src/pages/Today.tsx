@@ -22,17 +22,18 @@ export default function Today() {
   const { user } = useAuth();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     async function fetchHabits() {
       if (!user) return;
 
       setLoading(true);
-      
+
       const { data, error } = await supabase
-        .from('habits')
-        .select(`
+        .from("habits")
+        .select(
+          `
           id,
           description,
           category_id,
@@ -41,10 +42,11 @@ export default function Today() {
             icon,
             color
           )
-        `)
-        .eq('user_id', user.id)
-        .eq('date_reference', todayDate)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .eq("user_id", user.id)
+        .eq("date_reference", todayDate)
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Erro ao buscar hábitos:", error.message);
@@ -62,45 +64,53 @@ export default function Today() {
       1: "water",
       2: "food",
       3: "activity",
-      4: "sleep"
+      4: "sleep",
     };
     return types[categoryId] || "water";
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto pb-6 bg-background-light dark:bg-background-dark">
-      <header className="px-6 pt-6 pb-2 sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
-        <div className="flex items-center justify-between mb-6">
-          <WelcomeHeader /> 
+    <div className="fixed inset-0 flex flex-col bg-background-light dark:bg-background-dark max-w-md mx-auto overflow-hidden">
+      <div className="flex flex-col shrink-0 z-30 bg-background-light dark:bg-background-dark">
+        <header className="px-6 pt-6 pb-2">
+          <div className="flex items-center justify-between mb-6">
+            <WelcomeHeader />
+          </div>
+          <DateHeader />
+        </header>
+
+        <WeekCalendar />
+
+        <div className="px-6 pt-4 pb-2">
+          <h3 className="text-text-main dark:text-white text-lg font-bold px-1">
+            Seus hábitos
+          </h3>
         </div>
-        <DateHeader />
-      </header>
+      </div>
 
-      <WeekCalendar />
-
-      <div className="flex-1 px-6 flex flex-col gap-4 pb-24">
-        <h3 className="text-text-main dark:text-white text-lg font-bold px-1">
-          Seus hábitos
-        </h3>
-
+      <main className="flex-1 overflow-y-auto px-6 pb-24 touch-pan-y">
         {loading ? (
-          <p className="text-center text-gray-500 pt-10">Carregando seus hábitos...</p>
+          <p className="text-center text-gray-500 pt-10">Sincronizando...</p>
         ) : habits.length > 0 ? (
-          habits.map((habit) => (
-            <HabitCard 
-              key={habit.id}
-              type={getCardType(habit.category_id)} 
-              title={habit.habit_categories.name} 
-              description={habit.description} 
-            />
-          ))
+          <div className="flex flex-col gap-4">
+            {habits.map((habit) => (
+              <HabitCard
+                key={habit.id}
+                type={getCardType(habit.category_id)}
+                title={habit.habit_categories.name}
+                description={habit.description}
+              />
+            ))}
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center pt-10 opacity-60">
             <span className="material-symbols-outlined text-4xl mb-2">spa</span>
-            <p className="text-center text-sm">Nenhum hábito registrado para hoje.<br/>Que tal começar agora?</p>
+            <p className="text-center text-sm">
+              Nenhum hábito registrado hoje.
+            </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
